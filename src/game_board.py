@@ -1,12 +1,15 @@
-from game_state import GameState
 from game_button import GameButton
+from game_states import GameStates
+from constants import DefaultConstants
 
 
 class GameBoard:
     is_player_ones_turn = True
 
-    def __init__(self, master, height_of_board=6, width_of_board=7, player_one_color='blue',
-                 player_two_color='red', when_button_pressed=lambda: None):
+    def __init__(self, master, height_of_board=DefaultConstants.HEIGHT_OF_BOARD,
+                 width_of_board=DefaultConstants.WIDTH_OF_BOARD,
+                 player_one_color=DefaultConstants.PLAYER_ONE_COLOR,
+                 player_two_color=DefaultConstants.PLAYER_TWO_COLOR, when_button_pressed=lambda: None):
         self.height_of_board = height_of_board
         self.width_of_board = width_of_board
         self.player_one_color = player_one_color
@@ -52,9 +55,9 @@ class GameBoard:
                 else:
                     all_occupied = False
         if all_occupied:
-            return GameState.DRAW
+            return GameStates.DRAW
         else:
-            return GameState.HAS_NOT_CONCLUDED
+            return GameStates.HAS_NOT_CONCLUDED
 
     # used to check vertically, horizontally, and diagonally if 4 of the same value exist
     def get_if_a_spot_wins(self, starting_height, starting_width, height_control, width_control):
@@ -84,6 +87,6 @@ class GameBoard:
     # used to easily convert color string to game state for use in get_game_status
     def get_game_state_from_color(self, color):
         if color == self.player_one_color:
-            return GameState.PLAYER_ONE_WIN
+            return GameStates.PLAYER_ONE_WIN
         else:
-            return GameState.PLAYER_TWO_WIN
+            return GameStates.PLAYER_TWO_WIN

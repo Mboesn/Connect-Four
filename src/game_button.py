@@ -1,12 +1,13 @@
 from tkinter import *
-from game_state import GameState
+from constants import DefaultConstants
 
 
 class GameButton(Button, object):
     is_occupied = False
     is_occupied_by_first_player = False
 
-    def __init__(self, button_below, master=None, player_one_color='blue', player_two_color='red', cnf={}, **kw):
+    def __init__(self, button_below, master=None, player_one_color=DefaultConstants.PLAYER_ONE_COLOR,
+                 player_two_color=DefaultConstants.PLAYER_TWO_COLOR, cnf={}, **kw):
         super().__init__(master, cnf, **kw)
         self.button_below = button_below
         self.player_one_color = player_one_color
