@@ -31,7 +31,7 @@ class GameBoard:
                     button = self.board[i][j]
                     pad = 5
                     button.grid(row=height_of_board - i, column=width_of_board - j, padx=pad, pady=pad)
-                    button['command'] = lambda button=button, board=self.board: self.__button_set_if_is_occupied(button)
+                    button['command'] = lambda button=button, board=self.board: self.button_set_is_occupied(button)
 
     # this is used in order to create a none visible board using a board with one column changed
     def copy(self, board, column_to_change):
@@ -47,10 +47,12 @@ class GameBoard:
                 if i > 0:
                     button_below = self.board[i - 1][j]
                 self.board[i][j] = GameButton(button_below)
-        self.board[self.height_of_board][column_to_change].set_if_is_occupied(self.board, self.is_player_ones_turn)
+                self.board[i][j].is_occupied = board.board[i][j].is_occupied
+                self.board[i][j].is_occupied_by_first_player = board.board[i][j].is_occupied_by_first_player
+        self.board[self.height_of_board - 1][column_to_change].set_is_occupied(self.board, self.is_player_ones_turn)
 
-    def __button_set_if_is_occupied(self, button):
-        if button.set_if_is_occupied(self.board, self.is_player_ones_turn):
+    def button_set_is_occupied(self, button):
+        if button.set_is_occupied(self.board, self.is_player_ones_turn):
             self.is_player_ones_turn = not self.is_player_ones_turn
         self.when_button_pressed()
 
@@ -66,12 +68,14 @@ class GameBoard:
         for i in range(self.height_of_board):
             for j in range(self.width_of_board):
                 if self.board[i][j].is_occupied:
-                    occupying_color = self.board[i][j]['bg']
                     if self.get_if_a_spot_wins(i, j, 1, 0) or \
                             self.get_if_a_spot_wins(i, j, 0, 1) or \
                             self.get_if_a_spot_wins(i, j, 1, 1) or \
                             self.get_if_a_spot_wins(i, j, 1, -1):
-                        return self.get_game_state_from_color(occupying_color)
+                        if self.board[i][j].is_occupied_by_first_player:
+                            return GameStates.PLAYER_ONE_WIN
+                        else:
+                            return GameStates.PLAYER_TWO_WIN
                 else:
                     all_occupied = False
         if all_occupied:
@@ -81,13 +85,14 @@ class GameBoard:
 
     # used to check vertically, horizontally, and diagonally if 4 of the same value exist
     def get_if_a_spot_wins(self, starting_height, starting_width, height_control, width_control):
-        occupying_color = self.board[starting_height][starting_width]['bg']
+        is_occupied_by_first_player = self.board[starting_height][starting_width].is_occupied_by_first_player
         amount_located = 1
         # checks horizontally
         h = starting_height + height_control
         w = starting_width + width_control
         while self.height_of_board > h >= 0 and self.width_of_board > w >= 0:
-            if self.board[h][w]['bg'] == occupying_color:
+            if self.board[h][w].is_occupied and \
+                    self.board[h][w].is_occupied_by_first_player == is_occupied_by_first_player:
                 amount_located += 1
                 h += height_control
                 w += width_control
@@ -96,17 +101,11 @@ class GameBoard:
         h = starting_height - height_control
         w = starting_width - width_control
         while self.height_of_board > h >= 0 and self.width_of_board > w >= 0:
-            if self.board[h][w]['bg'] == occupying_color:
+            if self.board[h][w].is_occupied and \
+                    self.board[h][w].is_occupied_by_first_player == is_occupied_by_first_player:
                 amount_located += 1
                 h -= height_control
                 w -= width_control
             else:
                 break
         return amount_located >= 4
-
-    # used to easily convert color string to game state for use in get_game_status
-    def get_game_state_from_color(self, color):
-        if color == self.player_one_color:
-            return GameStates.PLAYER_ONE_WIN
-        else:
-            return GameStates.PLAYER_TWO_WIN

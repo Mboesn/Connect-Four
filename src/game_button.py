@@ -14,7 +14,7 @@ class GameButton(Button, object):
         self.player_two_color = player_two_color
 
     # places piece return true if legal returns false if illegal
-    def set_if_is_occupied(self, board, is_player_ones_turn):
+    def set_is_occupied(self, board, is_player_ones_turn):
         if self.button_below is None or self.button_below.is_occupied:
             if not self.is_occupied:
                 self.is_occupied_by_first_player = is_player_ones_turn
@@ -26,4 +26,4 @@ class GameButton(Button, object):
                 return True
             return False
         else:
-            return self.button_below.set_if_is_occupied(board, is_player_ones_turn)
+            return self.button_below.set_is_occupied(board, is_player_ones_turn)

@@ -2,6 +2,7 @@ from tkinter import *
 from game_states import GameStates
 from game_board import GameBoard
 from constants import DefaultConstants
+from cpu import Cpu
 import tkinter.font
 
 master = Tk()
@@ -17,11 +18,17 @@ game_board = GameBoard(master, when_button_pressed=lambda: update_text())
 game_state_label['bg'] = game_board.player_one_color
 
 
+def player_one_cpu():
+    cpu = Cpu()
+    cpu.calculate_min_max(board=game_board, depth=3, affect_board=True)
+
+
 # updates the text at the top of the screen according to the gameState
 def update_text():
     if game_board.get_game_status() == GameStates.HAS_NOT_CONCLUDED:
         if game_board.is_player_ones_turn:
             set_text("player one's turn", game_board.player_one_color)
+            player_one_cpu()
         else:
             set_text("player two's turn", game_board.player_two_color)
     elif game_board.get_game_status() == GameStates.DRAW:
@@ -41,4 +48,5 @@ def set_text(text, color):
     game_state_label['bg'] = color
 
 
+update_text()
 master.mainloop()
