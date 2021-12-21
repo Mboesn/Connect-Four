@@ -9,29 +9,32 @@ class GameBoard:
     def __init__(self, master=None, height_of_board=DefaultConstants.HEIGHT_OF_BOARD,
                  width_of_board=DefaultConstants.WIDTH_OF_BOARD,
                  player_one_color=DefaultConstants.PLAYER_ONE_COLOR,
-                 player_two_color=DefaultConstants.PLAYER_TWO_COLOR, when_button_pressed=lambda: None):
-        self.height_of_board = height_of_board
-        self.width_of_board = width_of_board
-        self.player_one_color = player_one_color
-        self.player_two_color = player_two_color
-        self.when_button_pressed = when_button_pressed
-        self.board = [[0 for i in range(width_of_board)] for j in range(height_of_board)]
-        for i in range(height_of_board):
-            for j in range(width_of_board):
-                button_below = None
-                if i > 0:
-                    button_below = self.board[i - 1][j]
-                self.board[i][j] = GameButton(button_below, master, player_one_color=self.player_one_color,
-                                              player_two_color=self.player_two_color,
-                                              bg="white", height=3, width=6)
-                button = self.board[i][j]
-                pad = 5
-                if master is not None:
+                 player_two_color=DefaultConstants.PLAYER_TWO_COLOR, when_button_pressed=lambda: None,
+                 board_to_copy=None, column_to_change=None):
+        if master is None:
+            self.copy(board_to_copy, column_to_change)
+        else:
+            self.height_of_board = height_of_board
+            self.width_of_board = width_of_board
+            self.player_one_color = player_one_color
+            self.player_two_color = player_two_color
+            self.when_button_pressed = when_button_pressed
+            self.board = [[0 for i in range(width_of_board)] for j in range(height_of_board)]
+            for i in range(height_of_board):
+                for j in range(width_of_board):
+                    button_below = None
+                    if i > 0:
+                        button_below = self.board[i - 1][j]
+                    self.board[i][j] = GameButton(button_below, master, player_one_color=self.player_one_color,
+                                                  player_two_color=self.player_two_color,
+                                                  bg="white", height=3, width=6)
+                    button = self.board[i][j]
+                    pad = 5
                     button.grid(row=height_of_board - i, column=width_of_board - j, padx=pad, pady=pad)
-                button['command'] = lambda button=button, board=self.board: self.__button_set_if_is_occupied(button)
+                    button['command'] = lambda button=button, board=self.board: self.__button_set_if_is_occupied(button)
 
-    # this constructor is used in order to create a none visible board using a board with one column changed
-    def __init__(self, board, column_to_change):
+    # this is used in order to create a none visible board using a board with one column changed
+    def copy(self, board, column_to_change):
         self.height_of_board = board.height_of_board
         self.width_of_board = board.width_of_board
         self.player_one_color = board.player_one_color
